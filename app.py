@@ -2,6 +2,7 @@ import streamlit as st
 import base64
 import tempfile
 import os
+import subprocess
 from google import genai
 from google.genai import types
 
@@ -70,25 +71,10 @@ st.markdown("""
         font-size: 13px;
         font-weight: 600;
         color: #6b7280;
-        text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 8px;
         direction: rtl;
         text-align: right;
-    }
-
-    .copy-box {
-        direction: rtl;
-        font-family: 'Heebo', Arial, sans-serif;
-        font-size: 14px;
-        background-color: #f8fafc;
-        border: 1px dashed #cbd5e1;
-        border-radius: 8px;
-        padding: 15px;
-        margin-top: 5px;
-        color: #374151;
-        white-space: pre-wrap;
-        cursor: text;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -103,10 +89,7 @@ if uploaded_file and st.button("✦ נתחי את הטופס", use_container_wid
         try:
             client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
-             if uploaded_file.name.endswith(".docx"):
-                from docx2pdf import convert
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_docx:
-                import subprocess
+            if uploaded_file.name.endswith(".docx"):
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".docx", dir="/tmp") as tmp_docx:
                     tmp_docx.write(uploaded_file.read())
                     tmp_docx_path = tmp_docx.name
