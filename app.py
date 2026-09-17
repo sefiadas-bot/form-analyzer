@@ -3,6 +3,8 @@ import base64
 import tempfile
 import os
 import subprocess
+import urllib.parse
+import streamlit.components.v1 as components
 from google import genai
 from google.genai import types
 
@@ -126,6 +128,30 @@ if "result" in st.session_state:
     st.markdown('<div class="section-title">תוצאת הניתוח</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="result-card">{result}</div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="section-title">העתקה — סמני הכל עם Ctrl+A ואחר כך Ctrl+C</div>', unsafe_allow_html=True)
-    st.text_area("", value=result, height=220, label_visibility="collapsed")
+    encoded = urllib.parse.quote(result)
+    copy_html = f"""
+    <button onclick="
+        const text = decodeURIComponent('{encoded}');
+        navigator.clipboard.writeText(text).then(() => {{
+            this.innerHTML = '✓ הועתק!';
+            this.style.backgroundColor = '#16a34a';
+            setTimeout(() => {{
+                this.innerHTML = '📋 העתק סיכום';
+                this.style.backgroundColor = '#4f46e5';
+            }}, 2000);
+        }});
+    " style="
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 28px;
+        font-size: 15px;
+        font-family: Heebo, Arial, sans-serif;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 8px;
+        transition: background-color 0.3s;
+    ">📋 העתק סיכום</button>
+    """
+    components.html(copy_html, height=60)
