@@ -103,13 +103,18 @@ if uploaded_file and st.button("✦ נתחי את הטופס", use_container_wid
         try:
             client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
-            if uploaded_file.name.endswith(".docx"):
+             if uploaded_file.name.endswith(".docx"):
                 from docx2pdf import convert
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_docx:
+                import subprocess
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".docx", dir="/tmp") as tmp_docx:
                     tmp_docx.write(uploaded_file.read())
                     tmp_docx_path = tmp_docx.name
+                subprocess.run([
+                    "libreoffice", "--headless", "--convert-to", "pdf",
+                    "--outdir", "/tmp", tmp_docx_path
+                ], check=True)
                 tmp_pdf_path = tmp_docx_path.replace(".docx", ".pdf")
-                convert(tmp_docx_path, tmp_pdf_path)
                 with open(tmp_pdf_path, "rb") as f:
                     pdf_bytes = f.read()
                 os.unlink(tmp_docx_path)
